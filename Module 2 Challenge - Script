@@ -1,0 +1,50 @@
+For Each ws In Worksheets
+       
+        ws.Range("I1").Value = "Ticker"
+        ws.Range("J1").Value = "Yearly Change"
+        ws.Range("K1").Value = "Percent Change"
+        ws.Range("L1").Value = "Total Stock Volume"
+        ws.Range("O2").Value = "Greatest % Increase"
+        ws.Range("O3").Value = "Greatest % Decrease"
+        ws.Range("O4").Value = "Greatest Total Increase"
+        ws.Range("P1").Value = "Ticker"
+        ws.Range("Q1").Value = "Value"
+
+        lastrow = Cells(Rows.Count, 1).End(xlUp).Row
+        Dim ticker As String
+        Dim totalstockvolume As Double
+        totalstockvolume = 0
+        Dim j As Integer
+        j = 0
+        Dim startrowindex As Long
+        startrowindex = 2
+        Dim change As Double
+        Dim percentchange As Double
+        
+        For i = 2 To lastrow
+            totalstockvolume = totalstockvolume + Cells(i, 7).Value
+        
+            If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+                ticker = ws.Cells(i, 1).Value
+                change = ws.Cells(i, 6).Value - ws.Cells(startrowindex, 3).Value
+                percentchange = change / ws.Cells(startrowindex, 3).Value
+                ws.Range("I" & 2 + j).Value = ticker
+                ws.Range("J" & 2 + j).Value = change
+                ws.Range("K" & 2 + j).Value = percentchange
+                ws.Range("K" & 2 + j).NumberFormat = "0.00%"
+                ws.Range("L" & 2 + j).Value = totalstockvolume
+                If ws.Range("J" & 2 + j).Value <= 0 Then
+                    ws.Range("J" & 2 + j).Interior.ColorIndex = 3
+                ElseIf ws.Range("J" & 2 + j).Value > 0 Then
+                    ws.Range("J" & 2 + j).Interior.ColorIndex = 4
+                End If
+                totalstockvolume = 0
+                j = j + 1
+                startrowindex = i + 1
+                ws.Range("Q2").Value = ws.Application.WorksheetFunction.max(Range("K2 : K3001"))
+                ws.Range("Q3").Value = ws.Application.WorksheetFunction.min(Range("K2 : K3001"))
+                ws.Range("Q4").Value = ws.Application.WorksheetFunction.max(Range("L2 : L3001"))
+                
+            End If
+        Next i
+    Next ws
